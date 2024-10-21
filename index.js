@@ -1,12 +1,10 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import axios from "axios";
-import { promises as fs } from "fs";
 import clc from "cli-color";
-import {__dirname, fsReadFile} from "./fs-dirname.js"
+import {__dirname, fsReadFile, fsWriteFile} from "./fs-dirname.js"
 
 const URL_BASE = "https://pokeapi.co/api/v2/";
-
 
 class Pokemon {
   constructor(id, name, height, weight, experience, type) {
@@ -35,17 +33,10 @@ yargs(hideBin(process.argv))
       try {
         const { data } = await axios.get(`${URL_BASE}/pokemon/${id}`);
         const fileData = await fsReadFile("files/pokemons.txt")
-
         const busqueda = fileData.find((item) => item.id === data.id);
         if (busqueda) return console.log(clc.red("Pokemón ya registrado"));
-
         fileData.push(data);
-
-        fs.writeFile(
-          `${__dirname}/files/pokemons.txt`,
-          JSON.stringify(fileData),
-          "utf-8"
-        );
+        await fsWriteFile("files/pokemons.txt", fileData)
         console.log(clc.green("Pokemón registrado con éxito"));
       } catch (err) {
         console.log(err);
@@ -59,7 +50,6 @@ yargs(hideBin(process.argv))
     async () => {
       try {
         const fileData = await fsReadFile("files/pokemons.txt")
-
         const listPokemons = fileData.map((item) => {
           return new Pokemon(
             item.id,
@@ -70,13 +60,8 @@ yargs(hideBin(process.argv))
             item.types[0].type.name
           );
         });
-
         console.log(clc.bgGreen("Lista actualizada"), listPokemons);
-        fs.writeFile(
-          `${__dirname}/files/list-pokemons.txt`,
-          JSON.stringify(listPokemons),
-          "utf-8"
-        );
+        await fsWriteFile("files/list-pokemons.txt", listPokemons)
       } catch (err) {
         console.error(clc.red("Error al procesar los archivos"), err);
       }

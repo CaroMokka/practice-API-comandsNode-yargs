@@ -2,7 +2,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import axios from "axios";
 import clc from "cli-color";
-import {__dirname, fsReadFile, fsWriteFile} from "./fs-dirname.js"
+import { fsReadFile, fsWriteFile } from "./fs-dirname.js"
 
 const URL_BASE = "https://pokeapi.co/api/v2/";
 
